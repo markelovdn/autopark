@@ -66,6 +66,15 @@ class CarController extends Controller
         return back();
     }
 
+    public function parking ($id)
+    {
+        DB::table('cars')->where('id', $id)->update([
+            'onpark' => 1,
+        ]);
+
+        return back();
+    }
+
     public function onPark ()
     {
         $cars = DB::table('cars')

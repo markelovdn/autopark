@@ -2,33 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
-    public function index (CarController $cars)
+    public function index (Client $clients)
     {
-        $clients = DB::table('car_client')
-            ->select('clients.*', 'car_client.*', 'cars.*')
-            ->Join('clients', 'clients.id', 'car_client.client_id')
-            ->Join('cars', 'cars.id', 'car_client.car_id')
-            ->orderBy('car_client.client_id')
-            ->paginate(5);
-
+        $clients = $clients->getAll();
         return view('admin.clients.index', ['clients' => $clients]);
     }
 
-    public function search (Request $request)
+    public function search (Request $request, Client $clients)
     {
-        $clients = DB::table('car_client')
-            ->select('clients.*', 'car_client.*', 'cars.*')
-            ->Join('clients', 'clients.id', 'car_client.client_id')
-            ->Join('cars', 'cars.id', 'car_client.car_id')
-            ->orderBy('car_client.client_id')
-            ->where('fio', 'like', '%'.$request->input('search').'%')
-            ->paginate(5);
+        $clients = $clients->getSearch($request);
 
         return view('admin.clients.index', ['clients' => $clients]);
     }

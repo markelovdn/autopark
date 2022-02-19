@@ -40,6 +40,7 @@
                 <th>ФИО</th>
                 <th>Авто</th>
                 <th>Номер</th>
+                <th>На парковку</th>
                 <th>Редактировать</th>
                 <th>Удалить</th>
                 <tbody>
@@ -49,6 +50,16 @@
                         <td>{{$client->fio}}</td>
                         <td>{{$client->brand}} {{$client->model}}</td>
                         <td>{{$client->num}}</td>
+                        <td>
+                            @if ($client->onpark==0)
+                            <a href="{{route('carParking', $client->car_id)}}" class="btn btn-success" >
+                                Заезд</a>
+                            @else
+                                <a href="#"  class="btn btn-success disabled">
+                                    На парковке</a>
+                            @endif
+
+                        </td>
                         <td><a href="{{route('client', $client->client_id)}}" class="btn btn-primary">
                                 <i class="nav-icon fas fa-edit"></i>
                             </a></td>

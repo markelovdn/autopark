@@ -30,6 +30,12 @@
                         <p>Клиенты</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{route('onPark')}}" class="nav-link">
+                        <i class="fas fa-car-alt"></i>
+                        <p>Автомобили на стоянке</p>
+                    </a>
+                </li>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->
