@@ -17,7 +17,7 @@ class Client extends Model
             ->select('clients.*', 'car_client.*', 'cars.*')
             ->Join('clients', 'clients.id', 'car_client.client_id')
             ->Join('cars', 'cars.id', 'car_client.car_id')
-            ->orderBy('car_client.client_id')
+            ->orderByDesc('car_client.client_id')
             ->paginate(5);
     }
 
