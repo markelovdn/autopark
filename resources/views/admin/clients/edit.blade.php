@@ -49,7 +49,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Телефон</label>
                             <div class="col-sm-10">
-                                <input type="text" name="phone" class="form-control" value="{{$client[0]->phone}}">
+                                <input type="text" name="phone" id="phone" class="form-control" value="{{$client[0]->phone}}">
                             </div>
                         </div>
                         <div class="form-group row">
@@ -93,7 +93,7 @@
                 <div class="form-group row">
                     <label class="col-sm-2 col-form-label">Гос. номер</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="num" value="{{$car->num}}">
+                        <input type="text" class="form-control" name="num" id="num" value="{{$car->num}}">
                     </div>
                 </div>
                 <div class="form-group row">
@@ -149,7 +149,7 @@
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label">Гос. номер</label>
                         <div class="col-sm-10">
-                            <input type="text" name="num" class="form-control">
+                            <input type="text" name="num" id="num1" class="form-control">
                         </div>
                     </div>
                     <div class="form-group row">
@@ -171,6 +171,44 @@
             </div>
         </form>
     </div>
+
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        var element = document.getElementById('phone');
+        var maskOptions = {
+            mask: '+7(000)000-00-00',
+            lazy: false
+        }
+        var mask = new IMask(element, maskOptions);
+    </script>
+
+    <script>
+        var element2 = document.getElementById('num');
+        var maskOptions2 = {
+            mask: '#000##000RUS',
+            definitions: {
+                // <any single char>: <same type as mask (RegExp, Function, etc.)>
+                // defaults are '0', 'a', '*'
+                '#': /[A-Z]/
+            },
+            lazy: false
+        }
+        var mask2 = new IMask(element2, maskOptions2);
+    </script>
+
+    <script>
+        var element2 = document.getElementById('num1');
+        var maskOptions2 = {
+            mask: '#000##000RUS',
+            definitions: {
+                // <any single char>: <same type as mask (RegExp, Function, etc.)>
+                // defaults are '0', 'a', '*'
+                '#': /[A-Z]/
+            },
+            lazy: false
+        }
+        var mask2 = new IMask(element2, maskOptions2);
+    </script>
 @endsection
 
 @section('footer')

@@ -18,12 +18,12 @@ class CreateCarClientTable extends Migration
             $table
                 ->foreignId('car_id')
                 ->constrained()
-                ->onDelete('restrict')
+                ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table
                 ->foreignId('client_id')
                 ->constrained()
-                ->onDelete('restrict')
+                ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->timestamps();
         });

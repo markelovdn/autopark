@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -17,88 +18,59 @@ class ClientController extends Controller
 
     public function search (Request $request, Client $clients)
     {
-        $clients = $clients->getSearch($request);
+        $validator = Validator::make($request->all(), [
+            'search' => 'regex:/^[a-zA-Zа-яА-Я]+$/',
+        ])->validate();
 
+        $clients = $clients->getSearch($request);
         return view('admin.clients.index', ['clients' => $clients]);
     }
 
-    public function create(Request $request)
+    public function create(Request $request, Client $client, Car $car)
     {
         $validator = Validator::make($request->all(), [
-            'fio' => 'required|min:3',
-            'gender' => 'required',
-            'phone' => 'required|unique:clients',
-            'model' => 'required|min:3',
-            'brand' => 'required',
-            'num' => 'required',
+            'fio' => 'required|min:3|max:255',
+            'gender' => 'required|max:255',
+            'phone' => 'required|unique:clients|max:20',
+            'address' => 'max:255',
+            'model' => 'required|min:3|max:255',
+            'brand' => 'required|max:255',
+            'num' => 'required|max:20',
+            'color' => 'max:255',
         ])->validate();
 
-        DB::table('clients')->insert([
-            'fio' => $request->input('fio'),
-            'gender' => $request->input('gender'),
-            'phone' => $request->input('phone'),
-            'address' => $request->input('address'),
-        ]);
-
-        DB::table('cars')->insert([
-            'brand' => $request->input('brand'),
-            'model' => $request->input('model'),
-            'num' => $request->input('num'),
-            'onpark' => $request->input('onpark'),
-            'color' => $request->input('color'),
-        ]);
-
-        $carsId = DB::table('cars')->where('num', $request->input('num'))
-            ->get();
-        $clientId = DB::table('clients')->where('phone', $request->input('phone'))
-            ->get();
-
-        DB::table('car_client')->insert([
-            'client_id' => $clientId[0]->id,
-            'car_id' => $carsId[0]->id,
-        ]);
+        $client->createClient($request);
+        $car->createCar($request);
+        $car->linkCarWhitClient($request, $client);
 
         return redirect(route('clients'));
     }
 
-    public function edit($id)
+    public function edit(Client $client, Car $car, $id)
     {
-        $client = DB::table('clients')
-            ->where('id', $id)
-            ->get();
-
-        $cars = DB::table('car_client')
-            ->select('car_client.*', 'cars.*')
-            ->Join('clients', 'clients.id', 'car_client.client_id')
-            ->Join('cars', 'cars.id', 'car_client.car_id')
-            ->where('client_id', $id)
-            ->get();
+        $client = $client->editClient($id);
+        $cars = $car->getClientWhitCars($id);
 
         return view('admin.clients.edit', ['client' => $client, 'cars' => $cars]);
     }
 
-    public function store (Request $request, $id)
+    public function store (Request $request, Client $client, $id)
     {
         $validator = Validator::make($request->all(), [
-            'fio' => 'required|min:3',
-            'gender' => 'required',
-            'phone' => 'required|unique:clients',
+            'fio' => 'required|min:3|max:255',
+            'gender' => 'required|max:255',
+            'phone' => 'required|unique:clients|max:20',
+            'address' => 'max:255',
         ])->validate();
 
-        DB::table('clients')->where('id', $id)->update([
-            'fio' => $request->input('fio'),
-            'gender' => $request->input('gender'),
-            'phone' => $request->input('phone'),
-            'address' => $request->input('address'),
-        ]);
+        $client->storeClient($request, $id);
 
         return back();
     }
 
-    public function delete ($client_id)
+    public function delete (Client $client, $client_id)
     {
-        DB::table('clients')->where('id', $client_id)->delete();
-
+        $client->delClientWithCars($client_id);
         return back();
     }
 }

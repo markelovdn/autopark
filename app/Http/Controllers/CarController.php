@@ -3,99 +3,77 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CarController extends Controller
 {
-    public function search (Request $request)
-    {
-        $cars = DB::table('cars')
-            ->where('num', 'like', '%'.$request->input('search').'%')
-            ->paginate(10);
-
-        return view('admin.cars.onpark', ['cars' => $cars]);
-
-    }
-
-    public function create(Request $request)
+    public function search (Request $request, Car $car)
     {
         $validator = Validator::make($request->all(), [
-            'model' => 'required|min:3',
-            'brand' => 'required',
-            'num' => 'required',
+            'search' => 'regex:/^[a-zA-Zа-яА-Я0-9]+$/',
         ])->validate();
 
-        DB::table('cars')->insert([
-            'brand' => $request->input('brand'),
-            'model' => $request->input('model'),
-            'num' => $request->input('num'),
-            'onpark' => $request->input('onpark'),
-            'color' => $request->input('color'),
-        ]);
-
-        $carsId = DB::table('cars')->where('num', $request->input('num'))
-            ->get();
-
-        DB::table('car_client')->insert([
-            'client_id' => $request->input('client_id'),
-            'car_id' => $carsId[0]->id,
-        ]);
-
-        return back();
-    }
-
-    public function update(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'model' => 'required|min:3',
-            'brand' => 'required',
-            'num' => 'required',
-        ])->validate();
-
-        DB::table('cars')->where('id', $id)->update([
-            'brand' => $request->input('brand'),
-            'model' => $request->input('model'),
-            'num' => $request->input('num'),
-            'onpark' => $request->input('onpark'),
-            'color' => $request->input('color'),
-            'updated_at' => Carbon::now()
-        ]);
-
-        return back();
-    }
-
-    public function parking ($id)
-    {
-        DB::table('cars')->where('id', $id)->update([
-            'onpark' => 1,
-        ]);
-
-        return back();
-    }
-
-    public function onPark ()
-    {
-        $cars = DB::table('cars')
-            ->where('cars.onpark', 1)
-            ->paginate(10);
+        $cars = $car->getSearch($request);
 
         return view('admin.cars.onpark', ['cars' => $cars]);
     }
 
-    public function outPark ($id)
+    public function create(Request $request, Car $car, Client $client)
     {
-        DB::table('cars')->where('id', $id)->update([
-            'onpark' => 0,
-        ]);
+        $validator = Validator::make($request->all(), [
+            'model' => 'required|min:3|max:255',
+            'brand' => 'required|max:255',
+            'num' => 'required|max:12',
+            'color' => 'max:255',
+        ])->validate();
+
+        $car->createCar($request);
+        $car->linkCarWhitClient($request, $client);
 
         return back();
     }
 
-    public function delete ($id)
+    public function update(Request $request, Car $car, $id)
     {
-        DB::table('cars')->where('id', $id)->delete();
+        $validator = Validator::make($request->all(), [
+            'model' => 'required|min:3|max:255',
+            'brand' => 'required|max:255',
+            'num' => 'required|max:12',
+            'color' => 'max:255',
+        ])->validate();
+
+        $car->createCar($request, $id);
+
+        return back();
+    }
+
+    public function parking (Car $car, $id)
+    {
+        $car->parkingCar($id);
+
+        return back();
+    }
+
+    public function onPark (Car $car)
+    {
+        $cars = $car->onParkCar();
+
+        return view('admin.cars.onpark', ['cars' => $cars]);
+    }
+
+    public function outPark (Car $car, $id)
+    {
+        $car->outParkCar($id);
+
+        return back();
+    }
+
+    public function delete (Car $car, $id)
+    {
+        $car->deleteCar($id);
 
         return back();
     }

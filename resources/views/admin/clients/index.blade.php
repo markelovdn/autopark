@@ -41,6 +41,7 @@
                 <th>Авто</th>
                 <th>Номер</th>
                 <th>На парковку</th>
+                <th>Дата время выезда/заезда</th>
                 <th>Редактировать</th>
                 <th>Удалить</th>
                 <tbody>
@@ -60,10 +61,17 @@
                             @endif
 
                         </td>
+                        <td>
+                            @if ($client->onpark==1)
+                               Заезд - {{$client->updated_at}}
+                            @else
+                                Выезд - {{$client->updated_at}}
+                            @endif
+                            </td>
                         <td><a href="{{route('client', $client->client_id)}}" class="btn btn-primary">
                                 <i class="nav-icon fas fa-edit"></i>
                             </a></td>
-                        <td><a href="{{route('delete', $client->client_id)}}" class="btn btn-danger">
+                        <td><a href="/delete/{{$client->client_id}}" class="btn btn-danger">
                                 <i class="nav-icon fas fa-trash"></i></a></td>
                     </tr>
                 @endforeach

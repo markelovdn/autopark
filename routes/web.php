@@ -24,17 +24,17 @@ Route::get('/', [Dashboard::class, 'index']);
 
 Route::post('/create', [ClientController::class, 'create'])->name('create');
 Route::get('/clients', [ClientController::class, 'index'])->name('clients');
-Route::post('/clientsSearch', [ClientController::class, 'search'])->name('clientsSearch');
+Route::match(['post', 'get'], '/clientsSearch', [ClientController::class, 'search'])->name('clientsSearch');
 Route::get('/client/{id}', [ClientController::class, 'edit'])->name('client');
 Route::post('/storeClient/{id}', [ClientController::class, 'store'])->name('storeClient');
-Route::get('/delete/{id}', [ClientController::class, 'delete'])->name('delete');
+Route::get('/delete/{id}', [ClientController::class, 'delete']);
 
 Route::post('/createCar', [CarController::class, 'create'])->name('createCar');
 Route::post('/updateCar/{id}', [CarController::class, 'update'])->name('updateCar');
 Route::get('/deleteCar/{id}', [CarController::class, 'delete'])->name('deleteCar');
 Route::get('/carParking/{id}', [CarController::class, 'parking'])->name('carParking');
 Route::get('/carsOnPark', [CarController::class, 'onPark'])->name('onPark');
-Route::post('/carsSearch', [CarController::class, 'search'])->name('carsSearch');
+Route::match(['post', 'get'],'/carsSearch', [CarController::class, 'search'])->name('carsSearch');
 Route::get('/carsOutPark/{id}', [CarController::class, 'outPark'])->name('outPark');
 
 Route::get('/cars', function () {
